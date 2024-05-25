@@ -91,15 +91,15 @@ class PrivateRecipeApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
-    def test_get_recipe_detail(self): # 报错，这里没写错
+    def test_get_recipe_detail(self):
         """Test get recipe detail."""
         recipe = create_recipe(user=self.user)
 
         url = detail_url(recipe.id)
         res = self.client.get(url)
 
-        serializer = RecipeDetailSerializer(recipe) # 被检测处
-        self.assertEqual(res.data, serializer.data) # serilizer.data多了'description': 'Sample description'
+        serializer = RecipeDetailSerializer(recipe)
+        self.assertEqual(res.data, serializer.data)
 
     def test_create_recipe(self):
         """Test creating a recipe."""
@@ -135,16 +135,14 @@ class PrivateRecipeApiTests(TestCase):
         self.assertEqual(recipe.link, original_link)
         self.assertEqual(recipe.user, self.user)
 
-    def test_full_update(self): # 此处报错，title
+    def test_full_update(self):
         """Test full update of recipe."""
-        # 创建一个食谱对象
         recipe = create_recipe(
             user=self.user,
             title='Sample recipe title',
             link='https://example.com/recipe.pdf',
             description='Sample recipe description.',
         )
-        # 创建字典，其中包含了要更新的新值
         payload = {
             'title': 'New recipe title',
             'link': 'https://example.com/new-recipe.pdf',
@@ -153,9 +151,9 @@ class PrivateRecipeApiTests(TestCase):
             'price': Decimal('2.50'),
         }
         url = detail_url(recipe.id)
-        res = self.client.put(url, payload) # 更新数据
+        res = self.client.put(url, payload)
 
-        self.assertEqual(res.status_code, status.HTTP_200_OK) # 若服务器成功处理了请求，状态码为200
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
         recipe.refresh_from_db()
         for k, v in payload.items():
             self.assertEqual(getattr(recipe, k), v)
